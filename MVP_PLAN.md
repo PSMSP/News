@@ -75,10 +75,11 @@ Target: 1-3 users, 10-15 core tickers, ~75 total companies tracked (including ad
 - **Low maintenance**: Managed Postgres, auto-deploys from git, no server management
 
 ### Authentication (MVP)
-- Simple username/password with hashed credentials stored in DB
-- JWT tokens for session management
-- No SSO or OAuth needed for 1-3 users
-- Users can be seeded via a script or simple registration page
+- **No passwords**. With only 1-3 users, auth is just a username identifier.
+- User selects or types their username on first visit; stored in browser localStorage
+- Backend associates all watchlist/read-state/feedback data with the username
+- No JWT, no tokens, no sessions — the username is sent as a header or query param with each request
+- New users are created automatically on first use (no registration flow needed)
 
 ---
 
@@ -88,7 +89,6 @@ Target: 1-3 users, 10-15 core tickers, ~75 total companies tracked (including ad
 users
   id          UUID PRIMARY KEY
   username    VARCHAR UNIQUE NOT NULL
-  password    VARCHAR NOT NULL (hashed)
   created_at  TIMESTAMP
 
 watchlist
@@ -169,7 +169,6 @@ feedback
 - Sidebar or section showing the adjacent ticker mapping with ability to add/remove
 
 ### Settings
-- Manage account (change password)
 - View/edit notification hours (stretch goal, hardcoded to 7am-7pm EST for MVP)
 
 ---
@@ -194,18 +193,18 @@ These don't need to be resolved before starting, but should be decided during de
 - Historical price data or charts
 - Sentiment analysis on articles
 - Multi-asset support (crypto, futures, international equities)
-- Admin panel for user management (seed users via script)
+- Admin panel for user management
 
 ---
 
 ## Suggested Build Order
 
 1. **Database setup + schema migration**
-2. **Backend: Auth endpoints** (register, login, token refresh)
+2. **Backend: User identification** (auto-create user by username on first request)
 3. **Backend: Watchlist CRUD** (add/remove ticker, manage adjacents)
 4. **Backend: Finviz scraper** (standalone script first, then scheduled job)
 5. **Backend: News API endpoints** (direct news, adjacent news, mark read, submit feedback)
-6. **Frontend: Auth pages** (login, simple registration)
+6. **Frontend: Username entry page** (simple username picker, stored in localStorage)
 7. **Frontend: Dashboard** (watchlist with unread counts)
 8. **Frontend: Ticker detail** (two-tab news view, feedback buttons)
 9. **Integration testing + deployment**
